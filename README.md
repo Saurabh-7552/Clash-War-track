@@ -31,16 +31,12 @@ A comprehensive full-stack application for tracking Clash of Clans war statistic
 ## 📸 Screenshots
 
 ### Dashboard - War Analytics
-![Dashboard Screenshot](https://via.placeholder.com/800x500/1a1a2e/ffffff?text=Dashboard+-+War+Analytics)
-*Real-time war data with player statistics and performance metrics*
+![Dashboard Screenshot](https://github.com/Saurabh-7552/Clash-War-track/blob/master/screenshots/dashboard.png)
+*Real-time war data with player statistics and performance metrics showing 225 total results, 3.3 average stars, and detailed player war results table*
 
 ### Leaderboard - Player Rankings
-![Leaderboard Screenshot](https://via.placeholder.com/800x500/16213e/ffffff?text=Leaderboard+-+Player+Rankings)
-*Ranked leaderboard showing top performers by total stars*
-
-### Navigation - Modern UI
-![Navigation Screenshot](https://via.placeholder.com/800x300/0f3460/ffffff?text=Navigation+-+Modern+UI)
-*Clean navigation with gradient backgrounds and smooth animations*
+![Leaderboard Screenshot](https://github.com/Saurabh-7552/Clash-War-track/blob/master/screenshots/leaderboard.png)
+*Ranked leaderboard showing top performers by total stars with 45 total players, 745 total stars, and highest score of 30 stars*
 
 ## 🛠️ Installation & Setup
 
