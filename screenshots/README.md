@@ -4,12 +4,18 @@ This directory contains screenshots of the Clash War Tracker application.
 
 ## Required Files:
 
-1. **dashboard.png** - Screenshot of the Dashboard page showing:
+1. **welcome.png** - Screenshot of the Welcome/Setup page showing:
+   - Clan ID input form
+   - Step-by-step instructions for finding clan ID
+   - Features preview section
+   - Modern dark theme with gradients
+
+2. **dashboard.png** - Screenshot of the Dashboard page showing:
    - War Analytics interface
    - Statistics cards (225 Total Results, 3.3 Avg Stars, 5 Unique Wars)
    - Player war results table with data
 
-2. **leaderboard.png** - Screenshot of the Leaderboard page showing:
+3. **leaderboard.png** - Screenshot of the Leaderboard page showing:
    - Top Players by Total Stars
    - Statistics cards (45 Total Players, 745 Total Stars, 30 Highest Score)
    - Ranked leaderboard table
@@ -17,6 +23,7 @@ This directory contains screenshots of the Clash War Tracker application.
 ## Instructions:
 
 Please save your screenshots as:
+- `screenshots/welcome.png`
 - `screenshots/dashboard.png`
 - `screenshots/leaderboard.png`
 

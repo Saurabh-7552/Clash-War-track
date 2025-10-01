@@ -30,6 +30,10 @@ A comprehensive full-stack application for tracking Clash of Clans war statistic
 
 ## 📸 Screenshots
 
+### Welcome Page - Clan Setup
+![Welcome Page Screenshot](https://github.com/Saurabh-7552/Clash-War-track/blob/master/screenshots/welcome.png)
+*The initial setup page where users enter their clan ID with step-by-step instructions on how to find their clan tag in Clash of Clans*
+
 ### Dashboard - War Analytics
 ![Dashboard Screenshot](https://github.com/Saurabh-7552/Clash-War-track/blob/master/screenshots/dashboard.png)
 *Real-time war data with player statistics and performance metrics showing 225 total results, 3.3 average stars, and detailed player war results table*

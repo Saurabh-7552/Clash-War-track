@@ -20,23 +20,30 @@ function Navigation() {
             </div>
           </Link>
 
-          {/* Navigation Links */}
-          <div className="nav-links">
-            <Link
-              to="/"
-              className={`nav-link ${isActive('/') ? 'active' : ''}`}
-            >
-              <span>📊</span>
-              <span>Dashboard</span>
-            </Link>
-            <Link
-              to="/leaderboard"
-              className={`nav-link ${isActive('/leaderboard') ? 'active' : ''}`}
-            >
-              <span>🏆</span>
-              <span>Leaderboard</span>
-            </Link>
-          </div>
+                 {/* Navigation Links */}
+                 <div className="nav-links">
+                   <Link
+                     to="/"
+                     className={`nav-link ${isActive('/') ? 'active' : ''}`}
+                   >
+                     <span>📊</span>
+                     <span>Dashboard</span>
+                   </Link>
+                   <Link
+                     to="/leaderboard"
+                     className={`nav-link ${isActive('/leaderboard') ? 'active' : ''}`}
+                   >
+                     <span>🏆</span>
+                     <span>Leaderboard</span>
+                   </Link>
+                   <Link
+                     to="/setup"
+                     className="nav-link"
+                   >
+                     <span>🏰</span>
+                     <span>Change Clan</span>
+                   </Link>
+                 </div>
         </div>
       </div>
     </nav>

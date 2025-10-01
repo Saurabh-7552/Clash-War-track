@@ -35,8 +35,18 @@ function Dashboard() {
       setFetching(true);
       setError(null);
       
+      // Get stored clan ID
+      const storedClanId = localStorage.getItem('clanId');
+      if (!storedClanId) {
+        setError('No clan ID found. Please set up your clan first.');
+        return;
+      }
+      
+      // Remove # from stored clan ID for API call
+      const clanId = storedClanId.replace('#', '');
+      
       // Fetch new war data from the API
-      const newData = await warResultsApi.fetchCurrentWar('2GC8P2L88');
+      const newData = await warResultsApi.fetchCurrentWar(clanId);
       
       if (newData && newData.length > 0) {
         // Refresh the results to show the new data
