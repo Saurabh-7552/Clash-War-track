@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlayerWarResultDto {
+    private String clanName;
     private String playerName;
     private String warId;
     private int stars;

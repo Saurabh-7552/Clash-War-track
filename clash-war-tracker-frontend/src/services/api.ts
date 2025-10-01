@@ -12,7 +12,31 @@ const api = axios.create({
   },
 });
 
+// Add request interceptor for better error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.code === 'ECONNABORTED') {
+      console.error('Request timeout - Backend might be down');
+    } else if (error.response?.status === 0) {
+      console.error('Network error - Backend not reachable');
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const warResultsApi = {
+  // Test backend connection
+  testConnection: async (): Promise<boolean> => {
+    try {
+      const response = await api.get('/health');
+      return response.status === 200;
+    } catch (error) {
+      console.error('Backend connection test failed:', error);
+      return false;
+    }
+  },
+
   // Fetch all war results
   getAllResults: async (): Promise<PlayerWarResult[]> => {
     try {
@@ -28,7 +52,15 @@ export const warResultsApi = {
   fetchCurrentWar: async (clanTag: string): Promise<PlayerWarResult[]> => {
     try {
       const response = await api.get<PlayerWarResult[]>(`/fetch-currentwar?clanTag=${encodeURIComponent(clanTag)}`);
-      return response.data;
+      // Transform DTO to entity format for frontend consistency
+      return response.data.map((dto: any) => ({
+        id: undefined,
+        clanName: dto.clanName,
+        playerName: dto.playerName,
+        warId: dto.warId,
+        stars: dto.stars,
+        createdAt: undefined
+      }));
     } catch (error) {
       console.error('Error fetching current war:', error);
       throw error;

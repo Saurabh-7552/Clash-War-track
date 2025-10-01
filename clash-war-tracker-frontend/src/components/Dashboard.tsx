@@ -6,7 +6,6 @@ function Dashboard() {
   const [results, setResults] = useState<PlayerWarResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [refreshing, setRefreshing] = useState(false);
   const [fetching, setFetching] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -14,6 +13,14 @@ function Dashboard() {
     try {
       setLoading(true);
       setError(null);
+      
+      // Test backend connection first
+      const isConnected = await warResultsApi.testConnection();
+      if (!isConnected) {
+        setError('Backend is not running. Please start the Spring Boot application on http://localhost:8080');
+        return;
+      }
+      
       const data = await warResultsApi.getAllResults();
       setResults(data);
     } catch (err) {
@@ -24,11 +31,6 @@ function Dashboard() {
     }
   };
 
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await fetchResults();
-    setRefreshing(false);
-  };
 
   const handleFetchWarData = async () => {
     try {
@@ -49,6 +51,12 @@ function Dashboard() {
       const newData = await warResultsApi.fetchCurrentWar(clanId);
       
       if (newData && newData.length > 0) {
+        // Check if clan is not in war
+        if (newData[0].playerName === "NO_WAR" && newData[0].stars === -1) {
+          setError('The clan is not in war. Please check during war period.');
+          return;
+        }
+        
         // Refresh the results to show the new data
         await fetchResults();
         setError(null);
@@ -95,20 +103,9 @@ function Dashboard() {
           {/* Action Buttons */}
           <div className="action-buttons">
             <button
-              onClick={handleRefresh}
-              disabled={refreshing}
-              className="btn btn-primary"
-            >
-              <span className={refreshing ? 'spinner' : ''}>
-                {refreshing ? '⟳' : '🔄'}
-              </span>
-              <span>{refreshing ? 'Refreshing...' : 'Refresh Data'}</span>
-            </button>
-            
-            <button
               onClick={handleFetchWarData}
               disabled={fetching}
-              className="btn btn-secondary"
+              className="btn btn-primary"
             >
               <span className={fetching ? 'spinner' : ''}>
                 {fetching ? '⟳' : '⚡'}
@@ -149,16 +146,10 @@ function Dashboard() {
               <div className="error-message">{error}</div>
               <div className="error-buttons">
                 <button 
-                  onClick={handleRefresh}
+                  onClick={handleFetchWarData}
                   className="btn btn-error"
                 >
-                  🔄 Retry Connection
-                </button>
-                <button 
-                  onClick={() => window.location.reload()} 
-                  className="btn btn-gray"
-                >
-                  🔄 Reload Page
+                  🔄 Try Again
                 </button>
               </div>
             </div>
@@ -212,6 +203,7 @@ function Dashboard() {
                 <table className="table">
                   <thead className="table-header">
                     <tr>
+                      <th>🏰 Clan</th>
                       <th>👤 Player</th>
                       <th>🆔 War ID</th>
                       <th>⭐ Stars</th>
@@ -221,6 +213,14 @@ function Dashboard() {
                   <tbody>
                     {results.map((result, index) => (
                       <tr key={result.id || `result-${index}`} className="table-row">
+                        <td className="table-cell">
+                          <div className="clan-info">
+                            <div className="clan-avatar">
+                              🏰
+                            </div>
+                            <span className="clan-name">{result.clanName}</span>
+                          </div>
+                        </td>
                         <td className="table-cell">
                           <div className="player-info">
                             <div className="player-avatar">

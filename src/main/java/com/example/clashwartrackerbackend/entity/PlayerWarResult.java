@@ -16,6 +16,9 @@ public class PlayerWarResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @Column(name = "clan_name", nullable = false)
+    private String clanName;
+    
     @Column(name = "player_name", nullable = false)
     private String playerName;
     

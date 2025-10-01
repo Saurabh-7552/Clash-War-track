@@ -7,6 +7,7 @@ import com.example.clashwartrackerbackend.repository.PlayerWarResultRepository;
 import com.example.clashwartrackerbackend.service.ClashService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.io.IOException;
 import java.util.List;
@@ -67,5 +68,22 @@ public class ClashController {
     @GetMapping("/leaderboard")
     public List<LeaderboardEntryDto> getLeaderboard() {
         return playerWarResultRepository.findLeaderboard();
+    }
+    
+    @GetMapping("/clear-duplicates")
+    public String clearDuplicates() {
+        // This is a temporary endpoint to help debug and clear duplicate data
+        // In production, you'd want proper admin controls
+        return "Use database query to remove duplicates: DELETE FROM player_war_results WHERE id NOT IN (SELECT MIN(id) FROM player_war_results GROUP BY player_name, war_id)";
+    }
+    
+    @GetMapping("/clear-all-data")
+    public String clearAllData() {
+        try {
+            playerWarResultRepository.deleteAll();
+            return "✅ All war data cleared successfully! Database is now empty.";
+        } catch (Exception e) {
+            return "❌ Error clearing data: " + e.getMessage();
+        }
     }
 }

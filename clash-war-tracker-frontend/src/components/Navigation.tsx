@@ -11,7 +11,16 @@ function Navigation() {
     <nav className="navigation">
       <div className="nav-container">
         <div className="nav-content">
-          {/* Logo */}
+          {/* Left side - Change Clan Button */}
+          <Link
+            to="/setup"
+            className="change-clan-btn"
+          >
+            <span>🏰</span>
+            <span>Change Clan</span>
+          </Link>
+
+          {/* Center - Logo */}
           <Link to="/" className="logo">
             <div className="logo-icon">⚔️</div>
             <div>
@@ -20,30 +29,23 @@ function Navigation() {
             </div>
           </Link>
 
-                 {/* Navigation Links */}
-                 <div className="nav-links">
-                   <Link
-                     to="/"
-                     className={`nav-link ${isActive('/') ? 'active' : ''}`}
-                   >
-                     <span>📊</span>
-                     <span>Dashboard</span>
-                   </Link>
-                   <Link
-                     to="/leaderboard"
-                     className={`nav-link ${isActive('/leaderboard') ? 'active' : ''}`}
-                   >
-                     <span>🏆</span>
-                     <span>Leaderboard</span>
-                   </Link>
-                   <Link
-                     to="/setup"
-                     className="nav-link"
-                   >
-                     <span>🏰</span>
-                     <span>Change Clan</span>
-                   </Link>
-                 </div>
+          {/* Right side - Navigation Links */}
+          <div className="nav-links">
+            <Link
+              to="/"
+              className={`nav-link ${isActive('/') ? 'active' : ''}`}
+            >
+              <span>📊</span>
+              <span>Dashboard</span>
+            </Link>
+            <Link
+              to="/leaderboard"
+              className={`nav-link ${isActive('/leaderboard') ? 'active' : ''}`}
+            >
+              <span>🏆</span>
+              <span>Leaderboard</span>
+            </Link>
+          </div>
         </div>
       </div>
     </nav>

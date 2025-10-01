@@ -129,10 +129,10 @@ function Leaderboard() {
                 Fetch some war data from the backend to populate the leaderboard.
               </p>
               <button 
-                onClick={() => window.open('http://localhost:8080/api/fetch-currentwar?clanTag=2GC8P2L88', '_blank')}
+                onClick={() => window.location.href = '/'}
                 className="btn btn-empty"
               >
-                ⚡ Fetch War Data
+                ⚡ Go to Dashboard
               </button>
             </div>
           ) : (
@@ -166,6 +166,7 @@ function Leaderboard() {
                   <thead className="table-header">
                     <tr>
                       <th># Rank</th>
+                      <th>🏰 Clan</th>
                       <th>👤 Player</th>
                       <th>⭐ Total Stars</th>
                       <th>📊 Progress</th>
@@ -173,10 +174,18 @@ function Leaderboard() {
                   </thead>
                   <tbody>
                     {leaderboard.map((entry, index) => (
-                      <tr key={entry.playerName} className="table-row">
+                      <tr key={`${entry.clanName}-${entry.playerName}`} className="table-row">
                         <td className="table-cell">
                           <div style={{ color: getRankColor(index), fontSize: '1.5rem', fontWeight: 'bold' }}>
                             {getRankIcon(index)}
+                          </div>
+                        </td>
+                        <td className="table-cell">
+                          <div className="clan-info">
+                            <div className="clan-avatar">
+                              🏰
+                            </div>
+                            <span className="clan-name">{entry.clanName}</span>
                           </div>
                         </td>
                         <td className="table-cell">

@@ -66,14 +66,25 @@ public class ClashService {
             // Check if clan is in war
             if (!"inWar".equals(apiResponse.getState())) {
                 logger.info("Clan is not in war. State: {}", apiResponse.getState());
-                return new ArrayList<>();
+                // Return a special DTO to indicate no war
+                PlayerWarResultDto noWarDto = new PlayerWarResultDto();
+                noWarDto.setClanName(apiResponse.getClan() != null ? apiResponse.getClan().getName() : "Unknown Clan");
+                noWarDto.setPlayerName("NO_WAR");
+                noWarDto.setWarId("NO_WAR");
+                noWarDto.setStars(-1); // Special indicator for no war
+                return List.of(noWarDto);
             }
             
-            // Generate war ID
-            String warId = UUID.randomUUID().toString();
+            // Generate war ID based on war start time to prevent duplicates
+            String warId = apiResponse.getStartTime() != null ? 
+                "war-" + apiResponse.getStartTime().replaceAll("[^0-9]", "") : 
+                UUID.randomUUID().toString();
             
             // Extract player war results
             List<PlayerWarResultDto> playerResults = new ArrayList<>();
+            
+            // Get clan name for all players
+            String clanName = apiResponse.getClan() != null ? apiResponse.getClan().getName() : "Unknown Clan";
             
             // Process clan members
             if (apiResponse.getClan() != null && apiResponse.getClan().getMembers() != null) {
@@ -86,6 +97,7 @@ public class ClashService {
                     }
                     
                     playerResults.add(new PlayerWarResultDto(
+                        clanName,
                         member.getName(),
                         warId,
                         totalStars
@@ -95,10 +107,18 @@ public class ClashService {
             
             logger.info("Extracted {} player war results", playerResults.size());
             
+            // Check if this war already exists to prevent duplicates
+            List<PlayerWarResult> existingResults = playerWarResultRepository.findByWarId(warId);
+            if (!existingResults.isEmpty()) {
+                logger.info("War {} already exists in database. Skipping duplicate save.", warId);
+                return playerResults;
+            }
+            
             // Save results to database
             List<PlayerWarResult> savedResults = new ArrayList<>();
             for (PlayerWarResultDto dto : playerResults) {
                 PlayerWarResult entity = new PlayerWarResult();
+                entity.setClanName(dto.getClanName());
                 entity.setPlayerName(dto.getPlayerName());
                 entity.setWarId(dto.getWarId());
                 entity.setStars(dto.getStars());

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LeaderboardEntryDto {
+    private String clanName;
     private String playerName;
     private Long totalStars;
 }

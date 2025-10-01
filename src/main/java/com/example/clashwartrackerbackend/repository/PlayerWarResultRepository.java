@@ -17,6 +17,6 @@ public interface PlayerWarResultRepository extends JpaRepository<PlayerWarResult
     
     List<PlayerWarResult> findAllByOrderByCreatedAtDesc();
     
-    @Query("SELECT new com.example.clashwartrackerbackend.dto.LeaderboardEntryDto(r.playerName, SUM(r.stars)) FROM PlayerWarResult r GROUP BY r.playerName ORDER BY SUM(r.stars) DESC")
+    @Query("SELECT new com.example.clashwartrackerbackend.dto.LeaderboardEntryDto(r.clanName, r.playerName, SUM(r.stars)) FROM PlayerWarResult r GROUP BY r.clanName, r.playerName ORDER BY SUM(r.stars) DESC")
     List<LeaderboardEntryDto> findLeaderboard();
 }
