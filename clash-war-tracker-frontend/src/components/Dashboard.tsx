@@ -7,6 +7,8 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [fetching, setFetching] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const fetchResults = async () => {
     try {
@@ -26,6 +28,32 @@ function Dashboard() {
     setRefreshing(true);
     await fetchResults();
     setRefreshing(false);
+  };
+
+  const handleFetchWarData = async () => {
+    try {
+      setFetching(true);
+      setError(null);
+      
+      // Fetch new war data from the API
+      const newData = await warResultsApi.fetchCurrentWar('2GC8P2L88');
+      
+      if (newData && newData.length > 0) {
+        // Refresh the results to show the new data
+        await fetchResults();
+        setError(null);
+        setSuccessMessage(`Successfully fetched ${newData.length} war results!`);
+        // Clear success message after 3 seconds
+        setTimeout(() => setSuccessMessage(null), 3000);
+      } else {
+        setError('No war data found. The clan might not be in war currently.');
+      }
+    } catch (err) {
+      setError('Failed to fetch war data. Make sure the backend is running and the clan tag is correct.');
+      console.error('Error fetching war data:', err);
+    } finally {
+      setFetching(false);
+    }
   };
 
   useEffect(() => {
@@ -68,14 +96,25 @@ function Dashboard() {
             </button>
             
             <button
-              onClick={() => window.open('http://localhost:8080/api/fetch-currentwar?clanTag=2GC8P2L88', '_blank')}
+              onClick={handleFetchWarData}
+              disabled={fetching}
               className="btn btn-secondary"
             >
-              <span>⚡</span>
-              <span>Fetch War Data</span>
+              <span className={fetching ? 'spinner' : ''}>
+                {fetching ? '⟳' : '⚡'}
+              </span>
+              <span>{fetching ? 'Fetching...' : 'Fetch War Data'}</span>
             </button>
           </div>
         </div>
+
+        {/* Success Message */}
+        {successMessage && (
+          <div className="success-message">
+            <div className="success-icon">✅</div>
+            <div className="success-text">{successMessage}</div>
+          </div>
+        )}
 
         {/* Main Content */}
         <div className="main-content">
@@ -123,10 +162,14 @@ function Dashboard() {
                 Fetch some war data to see results here
               </p>
               <button 
-                onClick={() => window.open('http://localhost:8080/api/fetch-currentwar?clanTag=2GC8P2L88', '_blank')}
+                onClick={handleFetchWarData}
+                disabled={fetching}
                 className="btn btn-empty"
               >
-                ⚡ Fetch War Data
+                <span className={fetching ? 'spinner' : ''}>
+                  {fetching ? '⟳' : '⚡'}
+                </span>
+                <span>{fetching ? 'Fetching...' : 'Fetch War Data'}</span>
               </button>
             </div>
           ) : (
@@ -141,14 +184,14 @@ function Dashboard() {
                 <div className="stat-card">
                   <div className="stat-icon">⭐</div>
                   <div className="stat-value">
-                    {Math.round(results.reduce((sum, r) => sum + r.stars, 0) / results.length * 10) / 10}
+                    {results.length > 0 ? Math.round(results.reduce((sum, r) => sum + r.stars, 0) / results.length * 10) / 10 : 0}
                   </div>
                   <div className="stat-label">Avg Stars</div>
                 </div>
                 <div className="stat-card">
                   <div className="stat-icon">⚔️</div>
                   <div className="stat-value">
-                    {new Set(results.map(r => r.warId)).size}
+                    {results.length > 0 ? new Set(results.map(r => r.warId)).size : 0}
                   </div>
                   <div className="stat-label">Unique Wars</div>
                 </div>
@@ -166,8 +209,8 @@ function Dashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {results.map((result) => (
-                      <tr key={result.id} className="table-row">
+                    {results.map((result, index) => (
+                      <tr key={result.id || `result-${index}`} className="table-row">
                         <td className="table-cell">
                           <div className="player-info">
                             <div className="player-avatar">
@@ -194,7 +237,7 @@ function Dashboard() {
                         </td>
                         <td className="table-cell">
                           <div className="date-text">
-                            {formatDate(result.createdAt)}
+                            {result.createdAt ? formatDate(result.createdAt) : 'Just fetched'}
                           </div>
                         </td>
                       </tr>

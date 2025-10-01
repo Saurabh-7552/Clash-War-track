@@ -1,7 +1,7 @@
 export interface PlayerWarResult {
-  id: number;
+  id?: number;
   playerName: string;
   warId: string;
   stars: number;
-  createdAt: string;
+  createdAt?: string;
 }
