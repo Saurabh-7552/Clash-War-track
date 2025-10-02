@@ -78,7 +78,7 @@ A comprehensive full-stack application for tracking Clash of Clans war statistic
    ```bash
    mvn spring-boot:run
    ```
-   Backend will be available at `http://localhost:8080`
+   
 
 ### Frontend Setup
 
@@ -96,7 +96,7 @@ A comprehensive full-stack application for tracking Clash of Clans war statistic
    ```bash
    npm run dev
    ```
-   Frontend will be available at `http://localhost:5173`
+  
 
 ## 📚 API Endpoints
 
