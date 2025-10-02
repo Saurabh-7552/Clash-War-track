@@ -1,0 +1,19 @@
+[Unit]
+Description=Clash War Tracker Backend
+After=postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=simple
+User=clash-tracker
+Group=clash-tracker
+WorkingDirectory=/opt/clash-tracker/app
+ExecStart=/usr/bin/java -jar -Djava.io.tmpdir=/opt/clash-tracker/tmp -Dspring.profiles.active=prod -Dspring.config.location=/opt/clash-tracker/config/application-prod.properties /opt/clash-tracker/app/clash-war-tracker-backend.jar
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+Environment=JAVA_OPTS="-Xms256m -Xmx512m"
+
+[Install]
+WantedBy=multi-user.target

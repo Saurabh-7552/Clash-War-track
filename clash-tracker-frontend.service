@@ -1,0 +1,17 @@
+[Unit]
+Description=Clash War Tracker Frontend
+After=clash-tracker-backend.service
+
+[Service]
+Type=simple
+User=clash-tracker
+Group=clash-tracker
+WorkingDirectory=/opt/clash-tracker/frontend
+ExecStart=/usr/bin/python3 -m http.server 3000
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

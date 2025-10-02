@@ -38,11 +38,25 @@ public class ClashController {
             
             return clashService.fetchCurrentWar(decodedClanTag);
         } catch (IOException e) {
-            System.err.println("Error details: " + e.getMessage());
-            return List.of(); // Return empty list on error
+            System.err.println("IOException in fetchCurrentWar: " + e.getMessage());
+            e.printStackTrace();
+            // Return a proper error response instead of empty list
+            PlayerWarResultDto errorDto = new PlayerWarResultDto();
+            errorDto.setClanName("ERROR");
+            errorDto.setPlayerName("API_ERROR");
+            errorDto.setWarId("ERROR");
+            errorDto.setStars(-999);
+            return List.of(errorDto);
         } catch (Exception e) {
-            System.err.println("General error: " + e.getMessage());
-            return List.of(); // Return empty list on error
+            System.err.println("General exception in fetchCurrentWar: " + e.getMessage());
+            e.printStackTrace();
+            // Return a proper error response instead of empty list
+            PlayerWarResultDto errorDto = new PlayerWarResultDto();
+            errorDto.setClanName("ERROR");
+            errorDto.setPlayerName("GENERAL_ERROR");
+            errorDto.setWarId("ERROR");
+            errorDto.setStars(-999);
+            return List.of(errorDto);
         }
     }
 
@@ -52,11 +66,25 @@ public class ClashController {
             System.out.println("Received clan tag (path): " + clanTag);
             return clashService.fetchCurrentWar(clanTag);
         } catch (IOException e) {
-            System.err.println("Error details: " + e.getMessage());
-            return List.of(); // Return empty list on error
+            System.err.println("IOException in fetchCurrentWarByPath: " + e.getMessage());
+            e.printStackTrace();
+            // Return a proper error response instead of empty list
+            PlayerWarResultDto errorDto = new PlayerWarResultDto();
+            errorDto.setClanName("ERROR");
+            errorDto.setPlayerName("API_ERROR");
+            errorDto.setWarId("ERROR");
+            errorDto.setStars(-999);
+            return List.of(errorDto);
         } catch (Exception e) {
-            System.err.println("General error: " + e.getMessage());
-            return List.of(); // Return empty list on error
+            System.err.println("General exception in fetchCurrentWarByPath: " + e.getMessage());
+            e.printStackTrace();
+            // Return a proper error response instead of empty list
+            PlayerWarResultDto errorDto = new PlayerWarResultDto();
+            errorDto.setClanName("ERROR");
+            errorDto.setPlayerName("GENERAL_ERROR");
+            errorDto.setWarId("ERROR");
+            errorDto.setStars(-999);
+            return List.of(errorDto);
         }
     }
     

@@ -8,10 +8,13 @@ A comprehensive full-stack application for tracking Clash of Clans war statistic
 
 - **Real-time War Data**: Fetch current war information from Clash of Clans API
 - **Player Analytics**: Track individual player performance and star counts
+- **Multi-Clan Support**: Unique player identification by clan name + player name
 - **Leaderboards**: Rank players by total stars earned across all wars
+- **Dynamic Clan Setup**: Users can input their own clan ID with validation
 - **Modern UI**: Beautiful, responsive interface with custom CSS styling
 - **Database Persistence**: Store war results in PostgreSQL database
 - **RESTful API**: Complete backend API for data management
+- **AWS Cloud Deployment**: Production-ready deployment on AWS EC2
 
 ## 🏗️ Architecture
 
@@ -98,26 +101,69 @@ A comprehensive full-stack application for tracking Clash of Clans war statistic
 ## 📚 API Endpoints
 
 ### War Data
-- `GET /api/fetch-currentwar?clanTag={TAG}` - Fetch current war data
+- `GET /api/fetch-currentwar?clanTag={TAG}` - Fetch current war data for specific clan
+- `GET /api/fetch-currentwar/{clanTag}` - Alternative path variable endpoint
 - `GET /api/results` - Get all stored war results
-- `GET /api/leaderboard` - Get player leaderboard
+- `GET /api/leaderboard` - Get player leaderboard ranked by total stars
+- `DELETE /api/clear-all-data` - Clear all war data from database
 
 ### Health Check
-- `GET /api/hello` - Basic health check endpoint
+- `GET /api/health` - Application health check endpoint
+- `GET /api/hello` - Basic hello endpoint
+
+### Response Examples
+
+**Successful War Data:**
+```json
+[
+  {
+    "clanName": "Elite Warriors",
+    "playerName": "PlayerOne",
+    "warId": "war_20251002_123456",
+    "stars": 3
+  }
+]
+```
+
+**No War Status:**
+```json
+[
+  {
+    "clanName": null,
+    "playerName": "NO_WAR",
+    "warId": "NO_WAR", 
+    "stars": -1
+  }
+]
+```
 
 ## 🎯 Usage
 
+### Initial Setup
+1. **Visit the Application**: Navigate to http://13.48.112.177 (or localhost for development)
+2. **Enter Clan ID**: On first visit, you'll see the clan setup page
+3. **Find Your Clan Tag**: Follow the in-app instructions to locate your clan tag in Clash of Clans
+4. **Validate Clan**: Enter your clan tag (e.g., #2GC8P2L88) and click "Start Tracking"
+5. **Automatic Redirect**: Upon successful validation, you'll be redirected to the dashboard
+
 ### Fetching War Data
-1. Navigate to the Dashboard
-2. Click "Fetch War Data" button
-3. The system will call the Clash of Clans API
-4. War results will be displayed in the table
-5. Data is automatically saved to the database
+1. **Dashboard Access**: After clan setup, you'll see the main dashboard
+2. **Fetch War Data**: Click "Fetch War Data" button to get current war information
+3. **API Integration**: The system calls the Clash of Clans API with your clan tag
+4. **Data Display**: War results are displayed in a comprehensive table with clan and player information
+5. **Auto-Save**: All data is automatically saved to the PostgreSQL database
+6. **No War Handling**: If your clan isn't in war, you'll see a "not in war" message
 
 ### Viewing Leaderboards
-1. Click on "Leaderboard" in the navigation
-2. View ranked players by total stars
-3. Refresh to get the latest rankings
+1. **Navigation**: Click on "Leaderboard" in the top navigation
+2. **Rankings**: View players ranked by total stars across all wars
+3. **Clan Context**: See which clan each player belongs to
+4. **Real-time Updates**: Leaderboard updates automatically as new war data is fetched
+
+### Changing Clans
+1. **Change Clan Button**: Click "Change Clan" in the top-left navigation
+2. **New Setup**: Enter a different clan tag to track multiple clans
+3. **Data Separation**: Each clan's data is tracked separately in the system
 
 ## 🗄️ Database Schema
 
@@ -125,12 +171,18 @@ A comprehensive full-stack application for tracking Clash of Clans war statistic
 ```sql
 CREATE TABLE player_war_results (
     id BIGSERIAL PRIMARY KEY,
-    player_name VARCHAR(255),
-    war_id VARCHAR(255),
-    stars INTEGER,
+    clan_name VARCHAR(255) NOT NULL,
+    player_name VARCHAR(255) NOT NULL,
+    war_id VARCHAR(255) NOT NULL,
+    stars INTEGER NOT NULL,
     created_at TIMESTAMP
 );
 ```
+
+**Key Features:**
+- **Unique Player Identification**: Combination of `clan_name` + `player_name` ensures players with same names from different clans are tracked separately
+- **War Deduplication**: `war_id` prevents duplicate war data from being stored
+- **Comprehensive Tracking**: Stores clan context alongside player performance
 
 ## 🔧 Configuration
 
@@ -153,7 +205,37 @@ clash.api.key=your_api_key_here
 
 ## 🚀 Deployment
 
-### Backend Deployment
+### 🌐 Live Demo
+The application is deployed on AWS EC2 with Elastic IP:
+- **Live Application**: http://13.48.112.177
+- **API Health Check**: http://13.48.112.177/api/health
+
+### AWS EC2 Deployment (Production)
+
+The application is deployed on AWS EC2 with the following architecture:
+- **EC2 Instance**: t3.micro (Amazon Linux 2)
+- **Elastic IP**: 13.48.112.177
+- **Database**: PostgreSQL (local on EC2)
+- **Reverse Proxy**: Nginx
+- **Process Management**: systemd services
+
+#### Deployment Architecture
+```
+Internet → Nginx (Port 80) → {
+  Frontend: Python HTTP Server (Port 3000)
+  Backend API: Spring Boot (Port 8080)
+} → PostgreSQL (Port 5432)
+```
+
+#### Services Configuration
+- **Backend Service**: `clash-tracker-backend.service`
+- **Frontend Service**: `clash-tracker-frontend.service`
+- **Database**: PostgreSQL with `clash_tracker` database
+- **Web Server**: Nginx with reverse proxy configuration
+
+### Local Development Deployment
+
+#### Backend Deployment
 1. Build the JAR file:
    ```bash
    mvn clean package
@@ -164,7 +246,7 @@ clash.api.key=your_api_key_here
    java -jar target/clash-war-tracker-backend-0.0.1-SNAPSHOT.jar
    ```
 
-### Frontend Deployment
+#### Frontend Deployment
 1. Build for production:
    ```bash
    npm run build
