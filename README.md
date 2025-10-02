@@ -14,7 +14,7 @@ A comprehensive full-stack application for tracking Clash of Clans war statistic
 - **Modern UI**: Beautiful, responsive interface with custom CSS styling
 - **Database Persistence**: Store war results in PostgreSQL database
 - **RESTful API**: Complete backend API for data management
-- **AWS Cloud Deployment**: Production-ready deployment on AWS EC2
+- **AWS Cloud Deployment**: Production-ready deployment on AWS EC2 with RDS PostgreSQL
 
 ## 🏗️ Architecture
 
@@ -215,7 +215,7 @@ The application is deployed on AWS EC2 with Elastic IP:
 The application is deployed on AWS EC2 with the following architecture:
 - **EC2 Instance**: t3.micro (Amazon Linux 2)
 - **Elastic IP**: 13.48.112.177
-- **Database**: PostgreSQL (local on EC2)
+- **Database**: Amazon RDS PostgreSQL 15.7 (db.t3.micro)
 - **Reverse Proxy**: Nginx
 - **Process Management**: systemd services
 
@@ -224,14 +224,15 @@ The application is deployed on AWS EC2 with the following architecture:
 Internet → Nginx (Port 80) → {
   Frontend: Python HTTP Server (Port 3000)
   Backend API: Spring Boot (Port 8080)
-} → PostgreSQL (Port 5432)
+} → Amazon RDS PostgreSQL (Port 5432)
 ```
 
 #### Services Configuration
 - **Backend Service**: `clash-tracker-backend.service`
 - **Frontend Service**: `clash-tracker-frontend.service`
-- **Database**: PostgreSQL with `clash_tracker` database
+- **Database**: Amazon RDS PostgreSQL with `clash_tracker` database
 - **Web Server**: Nginx with reverse proxy configuration
+- **RDS Endpoint**: `clash-tracker-db.c7uik844wszc.eu-north-1.rds.amazonaws.com`
 
 ### Local Development Deployment
 
@@ -253,6 +254,32 @@ Internet → Nginx (Port 80) → {
    ```
 
 2. Serve the `dist` folder with any static file server
+
+### 🗄️ Database Migration to Amazon RDS
+
+The application has been migrated from local PostgreSQL to Amazon RDS for better scalability and reliability.
+
+#### RDS Configuration
+- **Engine**: PostgreSQL 15.7
+- **Instance Class**: db.t3.micro (Free Tier eligible)
+- **Storage**: 20GB with auto-scaling up to 100GB
+- **Backup**: 7-day retention with automated backups
+- **Security**: VPC security groups with restricted access
+- **Performance Insights**: Enabled for monitoring
+
+#### Migration Benefits
+- **High Availability**: Multi-AZ deployment capability
+- **Automated Backups**: Point-in-time recovery
+- **Scalability**: Easy vertical and horizontal scaling
+- **Security**: Encrypted storage and network isolation
+- **Monitoring**: CloudWatch integration and Performance Insights
+- **Maintenance**: Automated patching and updates
+
+#### Connection Details
+- **Endpoint**: `clash-tracker-db.c7uik844wszc.eu-north-1.rds.amazonaws.com`
+- **Port**: 5432
+- **Database**: clash_tracker
+- **SSL**: Supported for secure connections
 
 ## 🧪 Testing
 

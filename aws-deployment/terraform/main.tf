@@ -111,13 +111,77 @@ resource "aws_eip_association" "clash_tracker_eip" {
   allocation_id = data.aws_eip.existing.id
 }
 
-# Optional: RDS PostgreSQL instance
+# RDS Subnet Group for multi-AZ deployment
+resource "aws_db_subnet_group" "clash_tracker_subnet_group" {
+  count = var.create_rds ? 1 : 0
+  
+  name       = "clash-tracker-subnet-group"
+  subnet_ids = data.aws_subnets.default[0].ids
+
+  tags = {
+    Name = "clash-tracker-db-subnet-group"
+  }
+}
+
+# Data source for default VPC subnets
+data "aws_vpc" "default" {
+  count = var.create_rds ? 1 : 0
+  default = true
+}
+
+data "aws_subnets" "default" {
+  count = var.create_rds ? 1 : 0
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default[0].id]
+  }
+}
+
+# Security Group specifically for RDS
+resource "aws_security_group" "rds_sg" {
+  count = var.create_rds ? 1 : 0
+  
+  name_prefix = "clash-tracker-rds-"
+  description = "Security group for Clash Tracker RDS PostgreSQL"
+
+  # PostgreSQL access from EC2 security group
+  ingress {
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [aws_security_group.clash_tracker_sg.id]
+    description     = "PostgreSQL access from EC2"
+  }
+
+  # PostgreSQL access from your local IP (for management)
+  ingress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = ["${var.elastic_ip}/32"]
+    description = "PostgreSQL access from Elastic IP"
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "All outbound traffic"
+  }
+
+  tags = {
+    Name = "clash-tracker-rds-security-group"
+  }
+}
+
+# RDS PostgreSQL instance
 resource "aws_db_instance" "clash_tracker_db" {
   count = var.create_rds ? 1 : 0
 
   identifier     = "clash-tracker-db"
   engine         = "postgres"
-  engine_version = "15.4"
+  engine_version = "15.7"
   instance_class = "db.t3.micro"
   
   allocated_storage     = 20
@@ -129,7 +193,8 @@ resource "aws_db_instance" "clash_tracker_db" {
   username = var.db_username
   password = var.db_password
 
-  vpc_security_group_ids = [aws_security_group.clash_tracker_sg.id]
+  vpc_security_group_ids = [aws_security_group.rds_sg[0].id]
+  db_subnet_group_name   = aws_db_subnet_group.clash_tracker_subnet_group[0].name
   
   backup_retention_period = 7
   backup_window          = "03:00-04:00"
@@ -137,6 +202,10 @@ resource "aws_db_instance" "clash_tracker_db" {
 
   skip_final_snapshot = true
   deletion_protection = false
+  
+  # Enable performance insights (optional)
+  performance_insights_enabled = true
+  performance_insights_retention_period = 7
 
   tags = {
     Name = "clash-tracker-database"
@@ -162,4 +231,20 @@ output "instance_public_dns" {
 output "rds_endpoint" {
   description = "RDS instance endpoint"
   value       = var.create_rds ? aws_db_instance.clash_tracker_db[0].endpoint : "Not created"
+}
+
+output "rds_port" {
+  description = "RDS instance port"
+  value       = var.create_rds ? aws_db_instance.clash_tracker_db[0].port : "Not created"
+}
+
+output "rds_database_name" {
+  description = "RDS database name"
+  value       = var.create_rds ? aws_db_instance.clash_tracker_db[0].db_name : "Not created"
+}
+
+output "rds_username" {
+  description = "RDS master username"
+  value       = var.create_rds ? aws_db_instance.clash_tracker_db[0].username : "Not created"
+  sensitive   = true
 }
