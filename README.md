@@ -214,7 +214,6 @@ The application is deployed on AWS EC2 with Elastic IP:
 
 The application is deployed on AWS EC2 with the following architecture:
 - **EC2 Instance**: t3.micro (Amazon Linux 2)
-- **Elastic IP**: 13.48.112.177
 - **Database**: Amazon RDS PostgreSQL 15.7 (db.t3.micro)
 - **Reverse Proxy**: Nginx
 - **Process Management**: systemd services
@@ -275,11 +274,6 @@ The application has been migrated from local PostgreSQL to Amazon RDS for better
 - **Monitoring**: CloudWatch integration and Performance Insights
 - **Maintenance**: Automated patching and updates
 
-#### Connection Details
-- **Endpoint**: `clash-tracker-db.c7uik844wszc.eu-north-1.rds.amazonaws.com`
-- **Port**: 5432
-- **Database**: clash_tracker
-- **SSL**: Supported for secure connections
 
 ## 🧪 Testing
 
